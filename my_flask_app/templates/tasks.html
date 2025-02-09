@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html x-data="data()" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Задания Студента</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='tailwind.output.css') }}" />
+    <script
+      src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
+      defer
+    ></script>
+    <script src="{{ url_for('static', filename='assets/js/init-alpine.js') }}"></script>
+  </head>
+  <body>
+    <div
+      class="flex h-screen bg-gray-50"
+      :class="{ 'overflow-hidden': isSideMenuOpen}"
+    >
+      <!-- Боковая панель -->
+      <aside
+        class="z-20 hidden w-64 overflow-y-auto bg-white md:block flex-shrink-0"
+      >
+        <div class="py-4 text-gray-500">
+          <a
+            class="ml-6 text-lg font-bold text-gray-800"
+            href="#"
+          >
+            Личный кабинет
+          </a>
+          <ul class="mt-6">
+            <li class="relative px-6 py-3">
+              <a
+                class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
+                href="/"
+              >
+                <svg
+                  class="w-5 h-5"
+                  aria-hidden="true"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  ></path>
+                </svg>
+                <span class="ml-4">Профиль</span>
+              </a>
+            </li>
+          </ul>
+          <ul>
+            <li class="relative px-6 py-3">
+              <a
+                class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
+                href="tasks"
+              >
+                <svg
+                  class="w-5 h-5"
+                  aria-hidden="true"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
+                  ></path>
+                </svg>
+                <span class="ml-4">Задания</span>
+              </a>
+            </li>
+            <li class="relative px-6 py-3">
+              <a
+                class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
+                href="admin_panel"
+              >
+                <svg
+                  class="w-5 h-5"
+                  aria-hidden="true"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                </svg>
+                <span class="ml-4">Панель администратора</span>
+              </a>
+            </li>
+            <li class="relative px-6 py-3">
+              <a
+                class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
+                href="login"
+              >
+                <svg
+                  class="w-5 h-5"
+                  aria-hidden="true"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                </svg>
+                <span class="ml-4">login</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+      <div class="flex flex-col flex-1">
+        <header class="z-10 py-4 bg-white shadow-md">
+          <div
+            class="container flex items-center justify-between h-full px-6 mx-auto text-purple-600"
+          >
+          </div>
+        </header>
+                <main class="h-full pb-16 overflow-y-auto">
+          <div class="container px-6 mx-auto grid"></div>
+          <div class="container grid px-6 mx-auto">
+            <h2
+              class="my-6 text-2xl font-semibold text-gray-700"
+            >
+              Задания
+            </h2>
+            <div class="w-full mb-8 overflow-hidden rounded-lg shadow-xs">
+              <div class="w-full overflow-x-auto">
+                <table class="w-full whitespace-no-wrap">
+                  <thead>
+                    <tr
+                      class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50"
+                    >
+                      <th class="px-4 py-3">Дисциплина</th>
+                      <th class="px-4 py-3">Номер</th>
+                      <th class="px-4 py-3">Название</th>
+                      <th class="px-4 py-3">Статус</th>
+                      <th class="px-4 py-3">Баллы</th>
+                      <th class="px-4 py-3">Тип</th>
+                      <th class="px-4 py-3">Предельная дата</th>
+                      <th class="px-4 py-3">Действия</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y">
+                    {% for student_tasks in student_tasks %}
+                      <tr class="text-gray-700">
+                        <td class="px-4 py-3">
+                          <div class="flex items-center text-sm">
+                            <div>
+                              <p class="font-semibold">{{ student_tasks.name }}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                          {{ student_tasks.number }}
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                          {{ student_tasks.title }}
+                        </td>
+                        <td class="px-4 py-3 text-xs">
+                          <span class="px-2 py-1 font-semibold leading-tight 
+                            {% if student_tasks.status == 'active' %}text-green-700 bg-green-100
+                            {% elif student_tasks.status == 'inactive' %}text-orange-700 bg-orange-100
+                            {% elif student_tasks.status == 'pending' %}text-red-700 bg-red-100
+                            {% else %}text-gray-700 bg-gray-100{% endif %} rounded-full">
+                            {{ student_tasks.status }}
+                          </span>
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                          {{ student_tasks.points }}
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                          {{ student_tasks.type }}
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                          {{ student_tasks.date }}
+                        </td>
+                        <td class="px-4 py-3">
+                          <div class="flex items-center space-x-4 text-sm">
+                            <button
+                              class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                              aria-label="Edit"
+                            >
+                              <svg
+                                class="w-5 h-5"
+                                aria-hidden="true"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
+                                ></path>
+                              </svg>
+                            </button>
+                            <button
+                              class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                              aria-label="Delete"
+                            >
+                              <svg
+                                class="w-5 h-5"
+                                aria-hidden="true"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fill-rule="evenodd"
+                                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                  clip-rule="evenodd"
+                                ></path>
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- With actions -->
+            <div class="w-full overflow-hidden rounded-lg shadow-xs">
+              <div class="w-full overflow-x-auto">
+              </div>
+                <span class="col-span-2"></span>
+            </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

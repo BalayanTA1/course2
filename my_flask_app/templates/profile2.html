@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html x-data="data()" lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Вход в аккаунт</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='tailwind.output.css') }}" />
+    <script
+      src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
+      defer
+    ></script>
+  </head>
+  <body>
+    <div class="flex h-screen bg-gray-50">
+      <!-- Боковая панель -->
+      <aside
+        class="z-20 hidden w-64 overflow-y-auto bg-white md:block flex-shrink-0"
+      >
+        <div class="py-4 text-gray-500">
+          <a
+            class="ml-6 text-lg font-bold text-gray-800"
+            href="#"
+          >
+            Личный кабинет
+          </a>
+          <ul class="mt-6">
+            <li class="relative px-6 py-3">
+              <a
+                class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
+                href="profile"
+              >
+                <svg
+                  class="w-5 h-5"
+                  aria-hidden="true"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  ></path>
+                </svg>
+                <span class="ml-4">Профиль</span>
+              </a>
+            </li>
+          </ul>
+          <ul>
+            <li class="relative px-6 py-3">
+              <a
+                class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
+                href="tasks"
+              >
+                <svg
+                  class="w-5 h-5"
+                  aria-hidden="true"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
+                  ></path>
+                </svg>
+                <span class="ml-4">Задания</span>
+              </a>
+            </li>
+            <li class="relative px-6 py-3">
+              <a
+                class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
+                href="admin_panel"
+              >
+                <svg
+                  class="w-5 h-5"
+                  aria-hidden="true"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                </svg>
+                <span class="ml-4">Панель администратора</span>
+              </a>
+            </li>
+            <li class="relative px-6 py-3">
+              <a
+                class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
+                href="login"
+              >
+                <svg
+                  class="w-5 h-5"
+                  aria-hidden="true"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                </svg>
+                <span class="ml-4">login</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </aside>
+      <div class="flex flex-col flex-1">
+        <!-- Шапка -->
+        <header class="z-10 py-4 bg-white shadow-md">
+          <div class="container flex items-center justify-between h-full px-6 mx-auto text-purple-600">
+          </div>
+        </header>
+        <main class="h-full pb-16 overflow-y-auto">
+          <div class="container px-6 mx-auto grid"></div>
+          <div class="container px-6 mx-auto grid">
+            <h2 class="my-6 text-2xl font-semibold text-gray-700">
+              Профиль преподавателя
+            </h2>
+            <!-- Основная информация профиля -->
+            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md">
+              <!-- ФИО -->
+              <div class="block text-sm">
+                <span class="text-lg font-bold text-gray-700">
+                  ФИО
+                </span>
+                <p class="mt-1 text-gray-900">{{ teacher.full_name }}</p>
+              </div>
+
+              <!-- Предметы -->
+              <div class="block mt-4 text-sm">
+                <span class="text-lg font-bold text-gray-700">
+                  Предметы
+                </span>
+                <p class="mt-1 text-gray-900">{{ teacher.subjects }}</p>
+              </div>
+
+              <!-- Должность -->
+              <div class="block mt-4 text-sm">
+                <span class="text-lg font-bold text-gray-700">
+                  Должность
+                </span>
+                <p class="mt-1 text-gray-900">{{ teacher.position }}</p>
+              </div>
+
+              <!-- Учёная степень -->
+              <div class="block mt-4 text-sm">
+                <span class="text-lg font-bold text-gray-700">
+                  Учёная степень
+                </span>
+                <p class="mt-1 text-gray-900">{{ teacher.academic_degree }}</p>
+              </div>
+
+              <!-- Звание -->
+              <div class="block mt-4 text-sm">
+                <span class="text-lg font-bold text-gray-700">
+                  Звание
+                </span>
+                <p class="mt-1 text-gray-900">{{ teacher.title }}</p>
+              </div>
+
+              <!-- Номер института -->
+              <div class="block mt-4 text-sm">
+                <span class="text-lg font-bold text-gray-700">
+                  Номер института
+                </span>
+                <p class="mt-1 text-gray-900">{{ teacher.institute_number }}</p>
+              </div>
+
+              <!-- Почта -->
+              <div class="block mt-4 text-sm">
+                <span class="text-lg font-bold text-gray-700">
+                  Почта
+                </span>
+                <p class="mt-1 text-gray-900">{{ teacher.email }}</p>
+              </div>
+
+              <!-- Телефон -->
+              <div class="block mt-4 text-sm">
+                <span class="text-lg font-bold text-gray-700">
+                  Телефон
+                </span>
+                <p class="mt-1 text-gray-900">{{ teacher.phone }}</p>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
