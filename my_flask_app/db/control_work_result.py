@@ -1,4 +1,4 @@
-from db import execute_query
+from db.db import execute_query
 
 def print_control_results():
     query = "SELECT * FROM Control_Work_Result;"

@@ -25,3 +25,10 @@ def get_study_group(group_number):
     result = group[0] if group else None
     print(result)  
     return result
+
+def get_study_group_numbers():
+    query = "SELECT group_number FROM Study_Group;"
+    group_numbers = execute_query(query)
+    # Преобразуем данные в список словарей с ключом 'name'
+    groups = [{'name': group['group_number']} for group in group_numbers]
+    return groups

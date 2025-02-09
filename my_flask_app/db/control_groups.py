@@ -1,4 +1,4 @@
-from db import execute_query
+from db.db import execute_query
 
 def print_control_groups():
     query = "SELECT * FROM Control_Groups;"

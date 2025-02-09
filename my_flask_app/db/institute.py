@@ -1,4 +1,4 @@
-from db import execute_query
+from db.db import execute_query
 
 def print_institutes():
     query = "SELECT * FROM Institute;"

@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 # from db.student import add_student
 # from db.teacher import add_teacher
-# from db.study_group import add_study_group
+from db.study_group import add_study_group, get_study_group_numbers
 from db.subject import add_subject
 app = Flask(__name__)
 
@@ -91,21 +91,6 @@ def admin_panel():
 def login():
     return render_template('login.html')
 
-
-
-
-# @app.route('/test', methods=['POST'])
-# def test():
-#     login = request.form.get("login")
-#     password = request.form.get("password")
-#     print(login, password)
-#     return render_template('admin_panel.html', admin_data=admin_data)
-
-
-
-
-
-
 # @app.route('/add_user', methods=['GET', 'POST'])
 # def add_user():
 #     if request.method == 'POST':
@@ -147,12 +132,12 @@ def login():
 
 # ВСЁ РАБОТАЕТ!!!
 # Маршрут для обработки добавления группы
-# @app.route('/add_group', methods=['POST'])
-# def add_group():
-#     institute_id = request.form.get('institute_id')
-#     if institute_id:
-#         add_study_group(institute_id)
-#     return redirect(url_for('admin_panel')) 
+@app.route('/add_group', methods=['POST'])
+def add_group():
+    institute_id = request.form.get('institute_id')
+    if institute_id:
+        add_study_group(institute_id)
+    return redirect(url_for('admin_panel')) 
 
 # Маршрут для обработки добавления предмета
 @app.route('/add_subject', methods=['POST'])

@@ -10,8 +10,8 @@
 # from subject import print_subjects, add_subject, delete_subject, get_subject
 # from lab_groups import print_lab_groups, add_lab_group, delete_lab_group, get_lab_groups
 # from control_groups import print_control_groups, add_control_group, delete_control_group, get_control_groups
-from db.student import add_student
+# from db.student import add_student
 
-if __name__ == '__main__':
-    # print_study_groups()
-    add_student("azs", "jxyfz", "26", "123", "iojmklm;l,")
+# if __name__ == '__main__':
+#     # print_study_groups()
+#     add_student("azs", "jxyfz", "26", "123", "iojmklm;l,")

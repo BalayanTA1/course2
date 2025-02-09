@@ -1,4 +1,4 @@
-from db import execute_query
+from db.db import execute_query
 
 def print_lab_submissions():
     query = "SELECT * FROM Lab_Work_Submission;"
