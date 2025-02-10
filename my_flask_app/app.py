@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
-# from db.student import add_student
-# from db.teacher import add_teacher
-from db.study_group import add_study_group, get_study_group_numbers
-from db.subject import add_subject
+from db.student import add_student, get_students, delete_student
+from db.teacher import add_teacher, get_teachers, delete_teacher
+from db.study_group import add_study_group, get_study_group_numbers, delete_study_group
+from db.subject import add_subject, get_subject_name, delete_subject_route
 app = Flask(__name__)
 
 # Данные о студенте
@@ -52,18 +52,6 @@ student_tasks = [
 
 # Данные для админ панели
 admin_data = {
-    'users': [
-        {'full_name': 'Иванов Иван Иванович', 'type': 'Студент'},
-        {'full_name': 'Петрова Мария Сергеевна', 'type': 'Преподаватель'},
-    ],
-    'groups': [
-        {'name': 'Группа 2443'},
-        {'name': 'Группа 1796'},
-    ],
-    'subjects': [
-        {'name': 'Математика'},
-        {'name': 'Физика'},
-    ],
     'tasks': [
         {'type': 'Контрольная', 'name': 'Математика', 'deadline': '2024-01-15'},
         {'type': 'Лабораторная', 'name': 'Физика', 'deadline': '2024-02-20'},
@@ -71,7 +59,7 @@ admin_data = {
 }
 
 # Маршруты для страниц
-@app.route('/')
+@app.route('/profile')
 def profile():
     return render_template('profile.html', student=student_data)
 
@@ -83,9 +71,6 @@ def profile2():
 def tasks():
     return render_template('tasks.html', student_tasks=student_tasks)
 
-@app.route('/admin_panel')
-def admin_panel():
-    return render_template('admin_panel.html', admin_data=admin_data)
 
 @app.route('/login')
 def login():
@@ -131,6 +116,19 @@ def login():
 #     return redirect(url_for('admin_panel'))
 
 # ВСЁ РАБОТАЕТ!!!
+@app.route('/admin_panel', methods=['GET'])
+def admin_panel():
+    user_type = request.args.get('user_type', 'student')
+    groups = get_study_group_numbers()
+    subjects = get_subject_name()
+    
+    students = get_students()
+    teachers = get_teachers()
+    
+    users = students + teachers
+    
+    return render_template('admin_panel.html', admin_data={'groups': groups, 'users': users, 'subjects': subjects, 'tasks': admin_data['tasks']}, user_type=user_type)
+
 # Маршрут для обработки добавления группы
 @app.route('/add_group', methods=['POST'])
 def add_group():
@@ -139,16 +137,70 @@ def add_group():
         add_study_group(institute_id)
     return redirect(url_for('admin_panel')) 
 
+@app.route('/delete_group', methods=['POST'])
+def delete_group():
+    group_number = request.form.get('group_number')
+    delete_study_group(group_number)
+    return redirect(url_for('admin_panel'))
+
+
 # Маршрут для обработки добавления предмета
 @app.route('/add_subject', methods=['POST'])
 def add_subject_route():
-    name = request.form.get('name')  # Получаем название предмета из формы
+    name = request.form.get('name')  
     if name:
-        add_subject(name)  # Вызываем функцию добавления предмета
+        add_subject(name)  
     return redirect(url_for('admin_panel'))  
 
+@app.route('/delete_subject', methods=['POST'])
+def delete_subject_route():
+    subject_name = request.form.get('subject_name')  
+    delete_subject(subject_name)  
+    return redirect(url_for('admin_panel'))
+
+
+
+# Маршрут для обработки добавления студента
+@app.route('/add_student', methods=['POST'])
+def add_student_route():
+    full_name = request.form.get('full_name')
+    education_form = request.form.get('education_form')
+    group_number = request.form.get('group_number')
+    password = request.form.get('password')
+    login = request.form.get('login')
+
+    if full_name and education_form and group_number and password and login:
+        add_student(full_name, education_form, group_number, password, login)
+    return redirect(url_for('admin_panel'))
+
+# Маршрут для обработки добавления преподавателя
+@app.route('/add_teacher', methods=['POST'])
+def add_teacher_route():
+    full_name = request.form.get('full_name')
+    academic_degree = request.form.get('academic_degree')
+    position = request.form.get('position')
+    institute_id = request.form.get('institute_id')
+    password = request.form.get('password')
+    login = request.form.get('login')
+
+    if full_name and position and institute_id and password and login:
+        add_teacher(full_name, academic_degree, None, position, institute_id, password, login)
+    return redirect(url_for('admin_panel'))
+
+@app.route('/delete_user', methods=['POST'])
+def delete_user():
+    user_id = request.form.get('user_id')  
+    user_type = request.form.get('user_type')  
+
+    if user_type == 'Студент':
+        delete_student(user_id)
+    elif user_type == 'Преподаватель':
+        delete_teacher(user_id)
+
+    return redirect(url_for('admin_panel'))
+
+
+
 if __name__ == '__main__':
-    # add_student("azs", "jxyfz", "26", "123", "34erhf5345345345")
-    # add_study_group(29)
     app.run(host='0.0.0.0', port=8000)
 

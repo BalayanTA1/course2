@@ -25,3 +25,8 @@ def get_teacher(teacher_id):
     result = teacher[0] if teacher else None
     print(result)  
     return result
+
+def get_teachers():
+    query = "SELECT teacher_id AS id, full_name, 'Преподаватель' AS type FROM Teacher"
+    teachers = execute_query(query)
+    return teachers

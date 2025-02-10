@@ -23,3 +23,8 @@ def get_subject(name):
     result = subject[0] if subject else None
     print(result)  
     return result
+
+def get_subject_name():
+    query = "SELECT name FROM Subject;"
+    subjects = execute_query(query)
+    return [{'name': subject['name']} for subject in subjects]

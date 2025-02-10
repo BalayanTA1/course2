@@ -25,3 +25,8 @@ def get_student(student_id):
     result = student[0] if student else None
     print(result)  
     return result
+
+def get_students():
+    query = "SELECT student_id AS id, full_name, 'Студент' AS type FROM Student"
+    students = execute_query(query)
+    return students
