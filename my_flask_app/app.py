@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for
-from db.student import add_student, get_students, delete_student
-from db.teacher import add_teacher, get_teachers, delete_teacher
+from flask import Flask, render_template, request, redirect, url_for, make_response
+from db.student import add_student, get_students, delete_student, get_student_profile, authenticate_user
+from db.teacher import add_teacher, get_teachers, delete_teacher, get_teacher_profile
 from db.study_group import add_study_group, get_study_group_numbers, delete_study_group
 from db.subject import add_subject, get_subject_name, delete_subject
 app = Flask(__name__)
@@ -58,62 +58,64 @@ admin_data = {
     ]
 }
 
-# Маршруты для страниц
+# Роут для профиля студента
 @app.route('/profile')
-def profile():
-    return render_template('profile.html', student=student_data)
+def student_profile():
+    user_id = request.cookies.get('user_id')
+    user_type = request.cookies.get('user_type')
 
+    if user_id and user_type == 'student':
+        student = get_student_profile(user_id)
+        if student:
+            return render_template('profile.html', student=student)
+    return redirect(url_for('login_page'))
+
+# Роут для профиля преподавателя
 @app.route('/profile2')
-def profile2():
-    return render_template('profile2.html', teacher=teacher_data)
+def teacher_profile():
+    user_id = request.cookies.get('user_id')
+    user_type = request.cookies.get('user_type')
+
+    if user_id and user_type == 'teacher':
+        teacher = get_teacher_profile(user_id)
+        if teacher:
+            return render_template('profile2.html', teacher=teacher)
+    return redirect(url_for('login_page'))
 
 @app.route('/tasks')
 def tasks():
     return render_template('tasks.html', student_tasks=student_tasks)
 
 
-@app.route('/login')
-def login():
+# Роут для отображения страницы входа
+@app.route('/login', methods=['GET'])
+def login_page():
     return render_template('login.html')
 
-# @app.route('/add_user', methods=['GET', 'POST'])
-# def add_user():
-#     if request.method == 'POST':
-#         user_type = request.form.get("user_type")
-#         full_name = request.form.get("full_name")
-#         password = request.form.get("password")
-#         login = request.form.get("login")
+# Роут для обработки авторизации
+@app.route('/login', methods=['POST'])
+def login():
+    login = request.form.get("login")
+    password = request.form.get("password")
 
-#         if user_type == "student":
-#             education_form = request.form.get("education_form")
-#             group_number = request.form.get("group_number")
-#             add_student(full_name, education_form, group_number, password, login)
-#         elif user_type == "teacher":
-#             academic_degree = request.form.get("academic_degree")
-#             title = request.form.get("title")
-#             position = request.form.get("position")
-#             institute_id = request.form.get("institute_id")
-#             add_teacher(full_name, academic_degree, title, position, institute_id, password, login)
+    # Проверяем данные пользователя
+    user_data, user_type = authenticate_user(login, password)
 
-#         return redirect(url_for('admin_panel'))
+    if user_data and user_type == 'student':
+        response = make_response(redirect(url_for('student_profile')))
+        response.set_cookie('user_id', str(user_data['student_id']))  # Устанавливаем cookie с ID студента
+        response.set_cookie('user_type', 'student')  # Указываем тип пользователя
+        return response
 
-    # Если метод GET, передаем user_type в шаблон (по умолчанию 'student')
-    # user_type = request.args.get('user_type', 'student')
-    # return render_template('admin_panel.html', user_type=user_type)
+    elif user_data and user_type == 'teacher':
+        response = make_response(redirect(url_for('teacher_profile')))
+        response.set_cookie('user_id', str(user_data['teacher_id']))  # Устанавливаем cookie с ID преподавателя
+        response.set_cookie('user_type', 'teacher')  # Указываем тип пользователя
+        return response
 
+    # Если пользователь не найден, возвращаем ошибку
+    return render_template('login.html', error="Неверный логин или пароль")
 
-
-
-# @app.route('/add_task', methods=['POST'])
-# def add_task():
-#     task_type = request.form.get("task_type")
-#     task_name = request.form.get("task_name")
-#     deadline = request.form.get("deadline")
-    
-#     # Здесь можно добавить логику для сохранения задачи в базу данных
-#     print(f"Добавлена задача: {task_name}, {task_type}, {deadline}")
-    
-#     return redirect(url_for('admin_panel'))
 
 # ВСЁ РАБОТАЕТ!!!
 @app.route('/admin_panel', methods=['GET'])
@@ -121,7 +123,6 @@ def admin_panel():
     user_type = request.args.get('user_type', 'student')
     groups = get_study_group_numbers()
     subjects = get_subject_name()
-    
     students = get_students()
     teachers = get_teachers()
     
@@ -200,7 +201,13 @@ def delete_user():
 
     return redirect(url_for('admin_panel'))
 
-
+# Роут для выхода из системы
+@app.route('/logout')
+def logout():
+    response = make_response(redirect(url_for('login_page')))
+    response.set_cookie('user_id', '', expires=0)  # Удаляем куку с ID пользователя
+    response.set_cookie('user_type', '', expires=0)  # Удаляем куку с типом пользователя
+    return response
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)

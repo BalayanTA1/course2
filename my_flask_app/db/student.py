@@ -30,3 +30,25 @@ def get_students():
     query = "SELECT student_id AS id, full_name, 'Студент' AS type FROM Student"
     students = execute_query(query)
     return students
+
+def get_student_profile(student_id):
+    student_query = "SELECT * FROM Student WHERE student_id = %s"
+    student = execute_query(student_query, (student_id,), fetch=True)
+    return student[0] if student else None
+
+# Проверяет, существует ли пользователь в таблицах Student или Teacher.
+# Возвращает данные пользователя и его тип (student или teacher).
+def authenticate_user(login, password):
+    student_query = "SELECT * FROM Student WHERE login = %s AND password = %s"
+    student = execute_query(student_query, (login, password), fetch=True)
+
+    if student:
+        return student[0], 'student'
+
+    teacher_query = "SELECT * FROM Teacher WHERE login = %s AND password = %s"
+    teacher = execute_query(teacher_query, (login, password), fetch=True)
+
+    if teacher:
+        return teacher[0], 'teacher'
+
+    return None, None

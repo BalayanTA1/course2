@@ -31,7 +31,7 @@
             <li class="relative px-6 py-3">
               <a
                 class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
-                href="/"
+                href="profile"
               >
                 <svg
                   class="w-5 h-5"
@@ -97,7 +97,7 @@
             <li class="relative px-6 py-3">
               <a
                 class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
-                href="login"
+                href="logout"
               >
                 <svg
                   class="w-5 h-5"
@@ -111,7 +111,7 @@
                 >
                   <path d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
                 </svg>
-                <span class="ml-4">login</span>
+                <span class="ml-4">Выход</span>
               </a>
             </li>
           </ul>
@@ -131,61 +131,33 @@
             </h2>
             <!-- Основная информация профиля -->
             <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md">
-              <!-- Номер студенческого билета/ зачетной книжки -->
               <div class="block text-sm">
-                <span class="text-lg font-bold text-gray-700">
-                  Номер студенческого билета/ зачетной книжки:
-                </span>
-                <p class="mt-1 text-gray-900">{{ student.student_id }}</p>
-              </div>
+  <span class="text-lg font-bold text-gray-700">
+    Номер студенческого билета/ зачетной книжки:
+  </span>
+  <p class="mt-1 text-gray-900">{{ student.student_id }}</p>
+</div>
 
-              <!-- ФИО -->
-              <div class="block mt-4 text-sm">
-                <span class="text-lg font-bold text-gray-700">
-                  ФИО
-                </span>
-                <p class="mt-1 text-gray-900">{{ student.full_name }}</p>
-              </div>
+<div class="block mt-4 text-sm">
+  <span class="text-lg font-bold text-gray-700">
+    ФИО
+  </span>
+  <p class="mt-1 text-gray-900">{{ student.full_name }}</p>
+</div>
 
-              <!-- Специальность -->
-              <div class="block mt-4 text-sm">
-                <span class="text-lg font-bold text-gray-700">
-                  Специальность
-                </span>
-                <p class="mt-1 text-gray-900">{{ student.specialty }}</p>
-              </div>
+<div class="block mt-4 text-sm">
+  <span class="text-lg font-bold text-gray-700">
+    Форма обучения
+  </span>
+  <p class="mt-1 text-gray-900">{{ student.education_form }}</p>
+</div>
 
-              <!-- Форма обучения -->
-              <div class="block mt-4 text-sm">
-                <span class="text-lg font-bold text-gray-700">
-                  Форма обучения
-                </span>
-                <p class="mt-1 text-gray-900">{{ student.education_form }}</p>
-              </div>
-
-              <!-- Номер группы -->
-              <div class="block mt-4 text-sm">
-                <span class="text-lg font-bold text-gray-700">
-                  Номер группы
-                </span>
-                <p class="mt-1 text-gray-900">{{ student.group_number }}</p>
-              </div>
-
-              <!-- Почта -->
-              <div class="block mt-4 text-sm">
-                <span class="text-lg font-bold text-gray-700">
-                  Почта
-                </span>
-                <p class="mt-1 text-gray-900">{{ student.email }}</p>
-              </div>
-
-              <!-- Телефон -->
-              <div class="block mt-4 text-sm">
-                <span class="text-lg font-bold text-gray-700">
-                  Телефон
-                </span>
-                <p class="mt-1 text-gray-900">{{ student.phone }}</p>
-              </div>
+<div class="block mt-4 text-sm">
+  <span class="text-lg font-bold text-gray-700">
+    Номер группы
+  </span>
+  <p class="mt-1 text-gray-900">{{ student.group_number }}</p>
+</div>
             </div>
           </div>
         </main>

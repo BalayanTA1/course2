@@ -30,3 +30,16 @@ def get_teachers():
     query = "SELECT teacher_id AS id, full_name, 'Преподаватель' AS type FROM Teacher"
     teachers = execute_query(query)
     return teachers
+
+def get_teacher_profile(teacher_id):
+    teacher_query = "SELECT * FROM Teacher WHERE teacher_id = %s"
+    teacher = execute_query(teacher_query, (teacher_id,), fetch=True)
+    return teacher[0] if teacher else None
+
+# UPDATE Teacher 
+# SET is_admin = FALSE 
+# WHERE teacher_id = 2;
+def update_teacher_admin_status(teacher_id, is_admin):
+    query = "UPDATE Teacher SET is_admin = %s WHERE teacher_id = %s;"
+    execute_query(query, (is_admin, teacher_id))
+    print(f"Статус администратора для преподавателя с ID {teacher_id} обновлен на {is_admin}.")
