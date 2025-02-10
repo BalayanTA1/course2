@@ -4,30 +4,9 @@ from db.teacher import add_teacher, get_teachers, delete_teacher, get_teacher_pr
 from db.study_group import add_study_group, get_study_group_numbers, delete_study_group
 from db.subject import add_subject, get_subject_name, delete_subject
 from db.work_groups import get_works, delete_work_from_group
+from db.work import get_student_tasks
 app = Flask(__name__)
 
-# Данные о студенте
-student_data = {
-    'student_id': '123456',
-    'full_name': 'Иванов Иван Иванович',
-    'specialty': 'Информатика',
-    'education_form': 'Очная',
-    'group_number': 'ИУ-101',
-    'email': 'ivanov@example.com',
-    'phone': '+7 (999) 123-45-67'
-}
-
-# Данные о преподавателях
-teacher_data = {
-    'full_name': 'Иванов Иван Иванович',
-    'subjects': 'Информатика',
-    'position': 'Ст.Преподаватель',
-    'academic_degree': 'Доктор наук',
-    'title': '??',
-    'institute_number': '7',
-    'email': 'ivanov@example.com',
-    'phone': '+7 (999) 123-45-67'
-}
 
 # Данные о заданиях студента
 student_tasks = [
@@ -51,13 +30,6 @@ student_tasks = [
     }
 ]
 
-# Данные для админ панели
-admin_data = {
-    'tasks': [
-        {'type': 'Контрольная', 'name': 'Математика', 'deadline': '2024-01-15'},
-        {'type': 'Лабораторная', 'name': 'Физика', 'deadline': '2024-02-20'},
-    ]
-}
 
 # Роут для профиля студента
 @app.route('/profile')
@@ -85,7 +57,13 @@ def teacher_profile():
 
 @app.route('/tasks')
 def tasks():
-    return render_template('tasks.html', student_tasks=student_tasks)
+    user_id = request.cookies.get('user_id')
+    user_type = request.cookies.get('user_type')
+
+    if user_id and user_type == 'student':
+        student_tasks = get_student_tasks(user_id)
+        return render_template('tasks.html', student_tasks=student_tasks)
+    return redirect(url_for('login_page'))
 
 
 # Роут для отображения страницы входа

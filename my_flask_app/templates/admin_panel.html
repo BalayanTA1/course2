@@ -28,7 +28,7 @@
             <li class="relative px-6 py-3">
               <a
                 class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
-                href="profile"
+                href="{{ url_for('student_profile') if user_type == 'student' else url_for('teacher_profile') }}"
               >
                 <svg
                   class="w-5 h-5"
@@ -48,7 +48,6 @@
               </a>
             </li>
           </ul>
-          <ul>
             {% if is_admin %}
             <li class="relative px-6 py-3">
               <a

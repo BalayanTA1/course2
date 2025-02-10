@@ -147,46 +147,40 @@
                       <th class="px-4 py-3">Дисциплина</th>
                       <th class="px-4 py-3">Номер</th>
                       <th class="px-4 py-3">Название</th>
-                      <th class="px-4 py-3">Статус</th>
-                      <th class="px-4 py-3">Баллы</th>
                       <th class="px-4 py-3">Тип</th>
                       <th class="px-4 py-3">Предельная дата</th>
+                      <th class="px-4 py-3">Дата сдачи</th>
+                      <th class="px-4 py-3">Оценка</th>
                       <th class="px-4 py-3">Действия</th>
                     </tr>
                   </thead>
                   <tbody class="bg-white divide-y">
-                    {% for student_tasks in student_tasks %}
+                    {% for task in student_tasks %}
                       <tr class="text-gray-700">
                         <td class="px-4 py-3">
                           <div class="flex items-center text-sm">
                             <div>
-                              <p class="font-semibold">{{ student_tasks.name }}</p>
+                              <p class="font-semibold">{{ task.discipline }}</p>
                             </div>
                           </div>
                         </td>
                         <td class="px-4 py-3 text-sm">
-                          {{ student_tasks.number }}
+                          {{ task.number }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                          {{ student_tasks.title }}
-                        </td>
-                        <td class="px-4 py-3 text-xs">
-                          <span class="px-2 py-1 font-semibold leading-tight 
-                            {% if student_tasks.status == 'active' %}text-green-700 bg-green-100
-                            {% elif student_tasks.status == 'inactive' %}text-orange-700 bg-orange-100
-                            {% elif student_tasks.status == 'pending' %}text-red-700 bg-red-100
-                            {% else %}text-gray-700 bg-gray-100{% endif %} rounded-full">
-                            {{ student_tasks.status }}
-                          </span>
+                          {{ task.title }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                          {{ student_tasks.points }}
+                          {{ task.type }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                          {{ student_tasks.type }}
+                          {{ task.deadline }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                          {{ student_tasks.date }}
+                          {{ task.submission_date if task.submission_date else '&nbsp;' | safe }}
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                          {{ task.grade if task.grade else '&nbsp;' | safe }}
                         </td>
                         <td class="px-4 py-3">
                           <div class="flex items-center space-x-4 text-sm">
@@ -230,6 +224,7 @@
                 </table>
               </div>
             </div>
+          </div>
 
             <!-- With actions -->
             <div class="w-full overflow-hidden rounded-lg shadow-xs">

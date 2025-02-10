@@ -39,12 +39,14 @@ def get_student_profile(student_id):
 # Проверяет, существует ли пользователь в таблицах Student или Teacher.
 # Возвращает данные пользователя и его тип (student или teacher).
 def authenticate_user(login, password):
+# Проверяем, является ли пользователь студентом
     student_query = "SELECT * FROM Student WHERE login = %s AND password = %s"
     student = execute_query(student_query, (login, password), fetch=True)
 
     if student:
-        return student[0], 'student'
+        return student[0], 'student', False  # Студент не может быть админом
 
+    # Если студент не найден, проверяем, является ли пользователь преподавателем
     teacher_query = "SELECT * FROM Teacher WHERE login = %s AND password = %s"
     teacher = execute_query(teacher_query, (login, password), fetch=True)
 
@@ -52,4 +54,5 @@ def authenticate_user(login, password):
         is_admin = teacher[0]['is_admin']  # Проверяем, является ли преподаватель админом
         return teacher[0], 'teacher', is_admin
 
+    # Если пользователь не найден
     return None, None, False
