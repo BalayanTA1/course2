@@ -152,11 +152,10 @@ def add_subject_route():
         add_subject(name)  
     return redirect(url_for('admin_panel'))  
 
-# удаление не работает
 @app.route('/delete_subject', methods=['POST'])
-def delete_subject():  # Переименовано здесь
-    subject_name = request.form.get('subject_name')  
-    delete_subject(subject_name)  
+def delete_subject_route():
+    subject_name = request.form.get('subject_name')
+    delete_subject(subject_name)
     return redirect(url_for('admin_panel'))
 
 
@@ -179,13 +178,14 @@ def add_student_route():
 def add_teacher_route():
     full_name = request.form.get('full_name')
     academic_degree = request.form.get('academic_degree')
+    title = request.form.get('title')
     position = request.form.get('position')
     institute_id = request.form.get('institute_id')
     password = request.form.get('password')
     login = request.form.get('login')
 
     if full_name and position and institute_id and password and login:
-        add_teacher(full_name, academic_degree, None, position, institute_id, password, login)
+        add_teacher(full_name, academic_degree, title, position, institute_id, password, login)
     return redirect(url_for('admin_panel'))
 
 @app.route('/delete_user', methods=['POST'])

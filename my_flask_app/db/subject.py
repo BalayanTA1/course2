@@ -12,10 +12,11 @@ def add_subject(name):
     execute_query(query, (name,), fetch=False)
     print(f"Добавлен предмет: {name}")
 
-def delete_subject(name):
-    query = "DELETE FROM Subject WHERE name = %s;"
-    execute_query(query, (name,), fetch=False)
-    print(f"Удален предмет: {name}")
+def delete_subject(subject_name):
+    query = "DELETE FROM Subject WHERE name = %s RETURNING name;"
+    result = execute_query(query, (subject_name,))
+    if result:
+        print(f"Удалён предмет: {result[0]['name']}")
 
 def get_subject(name):
     query = "SELECT * FROM Subject WHERE name = %s;"
