@@ -49,6 +49,7 @@ def authenticate_user(login, password):
     teacher = execute_query(teacher_query, (login, password), fetch=True)
 
     if teacher:
-        return teacher[0], 'teacher'
+        is_admin = teacher[0]['is_admin']  # Проверяем, является ли преподаватель админом
+        return teacher[0], 'teacher', is_admin
 
-    return None, None
+    return None, None, False

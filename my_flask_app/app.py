@@ -3,6 +3,7 @@ from db.student import add_student, get_students, delete_student, get_student_pr
 from db.teacher import add_teacher, get_teachers, delete_teacher, get_teacher_profile
 from db.study_group import add_study_group, get_study_group_numbers, delete_study_group
 from db.subject import add_subject, get_subject_name, delete_subject
+from db.work_groups import get_works, delete_work_from_group
 app = Flask(__name__)
 
 # Данные о студенте
@@ -98,37 +99,41 @@ def login():
     login = request.form.get("login")
     password = request.form.get("password")
 
-    # Проверяем данные пользователя
-    user_data, user_type = authenticate_user(login, password)
+    user_data, user_type, is_admin = authenticate_user(login, password)
 
     if user_data and user_type == 'student':
         response = make_response(redirect(url_for('student_profile')))
-        response.set_cookie('user_id', str(user_data['student_id']))  # Устанавливаем cookie с ID студента
+        response.set_cookie('user_id', str(user_data['student_id']))  # Устанавливаем куку с ID студента
         response.set_cookie('user_type', 'student')  # Указываем тип пользователя
         return response
 
     elif user_data and user_type == 'teacher':
         response = make_response(redirect(url_for('teacher_profile')))
-        response.set_cookie('user_id', str(user_data['teacher_id']))  # Устанавливаем cookie с ID преподавателя
+        response.set_cookie('user_id', str(user_data['teacher_id']))  # Устанавливаем куку с ID преподавателя
         response.set_cookie('user_type', 'teacher')  # Указываем тип пользователя
+        if is_admin:
+            response.set_cookie('is_admin', 'true')  # Устанавливаем куку для админа
         return response
 
-    # Если пользователь не найден, возвращаем ошибку
     return render_template('login.html', error="Неверный логин или пароль")
 
 
 # ВСЁ РАБОТАЕТ!!!
 @app.route('/admin_panel', methods=['GET'])
 def admin_panel():
+    # Проверяем, является ли пользователь админом
+    is_admin = request.cookies.get('is_admin') == 'true'
+    if not is_admin:
+        return "Доступ запрещен", 403  # Возвращаем ошибку доступа
     user_type = request.args.get('user_type', 'student')
     groups = get_study_group_numbers()
     subjects = get_subject_name()
     students = get_students()
     teachers = get_teachers()
-    
+    works = get_works()
     users = students + teachers
     
-    return render_template('admin_panel.html', admin_data={'groups': groups, 'users': users, 'subjects': subjects, 'tasks': admin_data['tasks']}, user_type=user_type)
+    return render_template('admin_panel.html', admin_data={'groups': groups, 'users': users, 'subjects': subjects, 'works': works}, user_type=user_type)
 
 # Маршрут для обработки добавления группы
 @app.route('/add_group', methods=['POST'])
@@ -201,12 +206,21 @@ def delete_user():
 
     return redirect(url_for('admin_panel'))
 
+# Роут для удаления работ из групп
+@app.route('/delete_work', methods=['POST'])
+def delete_work():
+    work_number = request.form.get('work_number')
+    group_number = request.form.get('group_number')
+    delete_work_from_group(work_number, group_number)
+    return redirect(url_for('admin_panel'))
+
 # Роут для выхода из системы
 @app.route('/logout')
 def logout():
     response = make_response(redirect(url_for('login_page')))
     response.set_cookie('user_id', '', expires=0)  # Удаляем куку с ID пользователя
     response.set_cookie('user_type', '', expires=0)  # Удаляем куку с типом пользователя
+    response.set_cookie('is_admin', '', expires=0)  # Удаляем куку для админа
     return response
 
 if __name__ == '__main__':
