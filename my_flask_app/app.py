@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from db.student import add_student, get_students, delete_student
 from db.teacher import add_teacher, get_teachers, delete_teacher
 from db.study_group import add_study_group, get_study_group_numbers, delete_study_group
-from db.subject import add_subject, get_subject_name, delete_subject_route
+from db.subject import add_subject, get_subject_name, delete_subject
 app = Flask(__name__)
 
 # Данные о студенте
@@ -152,8 +152,9 @@ def add_subject_route():
         add_subject(name)  
     return redirect(url_for('admin_panel'))  
 
+# удаление не работает
 @app.route('/delete_subject', methods=['POST'])
-def delete_subject_route():
+def delete_subject():  # Переименовано здесь
     subject_name = request.form.get('subject_name')  
     delete_subject(subject_name)  
     return redirect(url_for('admin_panel'))
