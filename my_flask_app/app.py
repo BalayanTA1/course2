@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from flask import send_from_directory
 from db.db import execute_query
 from db.uploaded_files import insert_uploaded_file
@@ -10,6 +11,7 @@ from db.study_group import add_study_group, get_study_group_numbers, delete_stud
 from db.subject import add_subject, get_subject_name, delete_subject
 from db.work_groups import get_works, delete_work_from_group
 from db.work import get_student_tasks
+from db.work_result import insert_grade, update_grade, check_existing_grade
 app = Flask(__name__)
 
 # Настройки для загрузки файлов
@@ -313,7 +315,32 @@ def logout():
     response.set_cookie('session', '', expires=0)  # Откуда они?
     return response
 
+@app.route('/grade_work', methods=['POST'])
+def grade_work():
+    user_id = request.cookies.get('user_id')
+    user_type = request.cookies.get('user_type')
 
+    if user_id and user_type == 'teacher':
+        student_id = request.form.get('student_id')
+        work_number = request.form.get('work_number')
+        grade = request.form.get('grade')
+        submission_date = datetime.now().date()
+
+        # Проверяем, существует ли уже запись в таблице Work_Result
+        existing_grade = check_existing_grade(student_id, work_number)
+
+        if existing_grade:
+            # Обновляем существующую оценку
+            update_grade(student_id, work_number, grade, submission_date)
+        else:
+            # Вставляем новую оценку
+            insert_grade(student_id, work_number, grade, submission_date)
+
+        flash('Оценка успешно сохранена', 'success')
+    else:
+        flash('Ошибка: вы не авторизованы как преподаватель', 'error')
+
+    return redirect(url_for('teacher_tasks'))
 
 if __name__ == '__main__':
     app.secret_key = 'supersecretkey'  # Ключ для работы с flash-сообщениями
