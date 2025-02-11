@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, make_response
+import os
+from flask import Flask, render_template, request, redirect, url_for, make_response, flash
 from db.student import add_student, get_students, delete_student, get_student_profile, authenticate_user
 from db.teacher import add_teacher, get_teachers, delete_teacher, get_teacher_profile
 from db.study_group import add_study_group, get_study_group_numbers, delete_study_group
@@ -6,6 +7,55 @@ from db.subject import add_subject, get_subject_name, delete_subject
 from db.work_groups import get_works, delete_work_from_group
 from db.work import get_student_tasks
 app = Flask(__name__)
+
+# Настройки для загрузки файлов
+app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')  # Папка для загрузки
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # Ограничение на размер файла (2 МБ)
+app.config['ALLOWED_EXTENSIONS'] = {'pdf'}  # Разрешенные расширения файлов
+
+# Создаем папку для загрузки, если она не существует
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
+
+# Функция для проверки расширения файла
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+# Роут для загрузки PDF
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    user_id = request.cookies.get('user_id')
+    user_type = request.cookies.get('user_type')
+
+    if not user_id or user_type != 'student':  # Проверяем, авторизован ли студент
+        return redirect(url_for('login_page'))
+
+    if 'file' not in request.files:
+        flash('Файл не выбран', 'error')
+        return redirect(request.url)
+
+    file = request.files['file']
+
+    if file.filename == '':
+        flash('Файл не выбран', 'error')
+        return redirect(request.url)
+
+    if file and allowed_file(file.filename):
+        if file.content_length > app.config['MAX_CONTENT_LENGTH']:
+            flash('Файл слишком большой. Максимальный размер — 2 МБ.', 'error')
+            return redirect(request.url)
+
+        # Сохранение файла без безопасного имени
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+        file.save(file_path)
+
+        # Здесь можно добавить логику для сохранения информации о файле в базу данных
+        flash('Файл успешно загружен', 'success')
+        return redirect(url_for('tasks'))
+
+    flash('Недопустимый формат файла. Разрешены только PDF.', 'error')
+    return redirect(request.url)
+
 
 
 # Данные о заданиях студента
@@ -201,6 +251,9 @@ def logout():
     response.set_cookie('is_admin', '', expires=0)  # Удаляем куку для админа
     return response
 
+
+
 if __name__ == '__main__':
+    app.secret_key = 'supersecretkey'  # Ключ для работы с flash-сообщениями
     app.run(host='0.0.0.0', port=8000)
 
