@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html x-data="data()" lang="ru">
+<html x-data="data()" lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Вход в аккаунт</title>
+    <title>Задания Преподавателя</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
@@ -13,9 +13,13 @@
       src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
       defer
     ></script>
+    <script src="{{ url_for('static', filename='assets/js/init-alpine.js') }}"></script>
   </head>
   <body>
-    <div class="flex h-screen bg-gray-50">
+    <div
+      class="flex h-screen bg-gray-50"
+      :class="{ 'overflow-hidden': isSideMenuOpen}"
+    >
       <!-- Боковая панель -->
       <aside
         class="z-20 hidden w-64 overflow-y-auto bg-white md:block flex-shrink-0"
@@ -31,7 +35,7 @@
             <li class="relative px-6 py-3">
               <a
                 class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
-                href="profile"
+                href="profile2"
               >
                 <svg
                   class="w-5 h-5"
@@ -55,7 +59,7 @@
             <li class="relative px-6 py-3">
               <a
                 class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
-                href="{{ url_for('teacher_tasks') }}"
+                href="teacher_tasks"
               >
                 <svg
                   class="w-5 h-5"
@@ -72,26 +76,6 @@
                   ></path>
                 </svg>
                 <span class="ml-4">Задания</span>
-              </a>
-            </li>
-            <li class="relative px-6 py-3">
-              <a
-                class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
-                href="admin_panel"
-              >
-                <svg
-                  class="w-5 h-5"
-                  aria-hidden="true"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
-                </svg>
-                <span class="ml-4">Панель администратора</span>
               </a>
             </li>
             <li class="relative px-6 py-3">
@@ -117,46 +101,51 @@
           </ul>
         </div>
       </aside>
+
       <div class="flex flex-col flex-1">
-        <!-- Шапка -->
         <header class="z-10 py-4 bg-white shadow-md">
-          <div class="container flex items-center justify-between h-full px-6 mx-auto text-purple-600">
+          <div
+            class="container flex items-center justify-between h-full px-6 mx-auto text-purple-600"
+          >
           </div>
         </header>
         <main class="h-full pb-16 overflow-y-auto">
           <div class="container px-6 mx-auto grid"></div>
-          <div class="container px-6 mx-auto grid">
-            <h2 class="my-6 text-2xl font-semibold text-gray-700">
-              Профиль преподавателя
+          <div class="container grid px-6 mx-auto">
+            <h2
+              class="my-6 text-2xl font-semibold text-gray-700"
+            >
+              Задания
             </h2>
-            <!-- Основная информация профиля -->
-            <div class="block text-sm">
-              <span class="text-lg font-bold text-gray-700">
-                ФИО
-              </span>
-              <p class="mt-1 text-gray-900">{{ teacher.full_name }}</p>
-            </div>
-            
-            <div class="block mt-4 text-sm">
-              <span class="text-lg font-bold text-gray-700">
-                Должность
-              </span>
-              <p class="mt-1 text-gray-900">{{ teacher.position }}</p>
-            </div>
-            
-            <div class="block mt-4 text-sm">
-              <span class="text-lg font-bold text-gray-700">
-                Учёная степень
-              </span>
-              <p class="mt-1 text-gray-900">{{ teacher.academic_degree }}</p>
-            </div>
-            
-            <div class="block mt-4 text-sm">
-              <span class="text-lg font-bold text-gray-700">
-                Звание
-              </span>
-              <p class="mt-1 text-gray-900">{{ teacher.title }}</p>
-            </div>
+            <div class="w-full mb-8 overflow-hidden rounded-lg shadow-xs">
+              <div class="w-full overflow-x-auto">
+                <table class="w-full whitespace-no-wrap">
+                  <thead>
+                    <tr
+                      class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50"
+                    >
+                      <th class="px-4 py-3">Номер</th>
+                      <th class="px-4 py-3">Название</th>
+                      <th class="px-4 py-3">Тип</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y">
+                    {% for work in teacher_works %}
+                      <tr class="text-gray-700">
+                        <td class="px-4 py-3 text-sm">
+                          {{ work.number }}
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                          {{ work.title }}
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                          {{ work.type }}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </main>

@@ -1,7 +1,7 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, make_response, flash
 from db.student import add_student, get_students, delete_student, get_student_profile, authenticate_user
-from db.teacher import add_teacher, get_teachers, delete_teacher, get_teacher_profile
+from db.teacher import add_teacher, get_teachers, delete_teacher, get_teacher_profile, get_teacher_works
 from db.study_group import add_study_group, get_study_group_numbers, delete_study_group
 from db.subject import add_subject, get_subject_name, delete_subject
 from db.work_groups import get_works, delete_work_from_group
@@ -115,6 +115,17 @@ def tasks():
         return render_template('tasks.html', student_tasks=student_tasks)
     return redirect(url_for('login_page'))
 
+
+
+@app.route('/teacher_tasks')
+def teacher_tasks():
+    user_id = request.cookies.get('user_id')
+    user_type = request.cookies.get('user_type')
+
+    if user_id and user_type == 'teacher':
+        teacher_works = get_teacher_works(user_id)
+        return render_template('tasks2.html', teacher_works=teacher_works)
+    return redirect(url_for('login_page'))
 
 # Роут для отображения страницы входа
 @app.route('/login', methods=['GET'])

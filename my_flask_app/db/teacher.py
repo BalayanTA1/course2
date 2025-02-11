@@ -43,3 +43,26 @@ def update_teacher_admin_status(teacher_id, is_admin):
     query = "UPDATE Teacher SET is_admin = %s WHERE teacher_id = %s;"
     execute_query(query, (is_admin, teacher_id))
     print(f"Статус администратора для преподавателя с ID {teacher_id} обновлен на {is_admin}.")
+
+
+def get_teacher_works(teacher_id):
+    # Запрос для получения всех работ, которые ведет преподаватель
+    query = '''
+        SELECT w.work_number, w.name, w.is_lab, w.is_control
+        FROM Work w
+        JOIN Teacher_Subject ts ON w.subject_name = ts.subject_name
+        WHERE ts.teacher_id = %s
+    '''
+    works = execute_query(query, (teacher_id,), fetch=True)
+
+    # Преобразуем данные в удобный формат
+    teacher_works = []
+    for work in works:
+        work_type = 'Лабораторная' if work['is_lab'] else 'Контрольная'
+        teacher_works.append({
+            'number': work['work_number'],
+            'title': work['name'],
+            'type': work_type
+        })
+
+    return teacher_works
