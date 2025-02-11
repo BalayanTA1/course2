@@ -1,4 +1,6 @@
 import os
+from flask import send_from_directory
+from db.db import execute_query
 from db.uploaded_files import insert_uploaded_file
 from werkzeug.utils import secure_filename
 from flask import Flask, render_template, request, redirect, url_for, make_response, flash
@@ -134,9 +136,33 @@ def teacher_tasks():
     user_type = request.cookies.get('user_type')
 
     if user_id and user_type == 'teacher':
-        teacher_works = get_teacher_works(user_id)
-        return render_template('tasks2.html', teacher_works=teacher_works)
+        # Получаем загруженные файлы, относящиеся к предметам преподавателя
+        query = """
+            SELECT uf.file_id, uf.student_id, s.full_name AS student_name, 
+                   uf.work_number, w.name AS work_name, uf.file_path, uf.upload_date
+            FROM Uploaded_Files uf
+            JOIN Work w ON uf.work_number = w.work_number
+            JOIN Student s ON uf.student_id = s.student_id
+            JOIN Teacher_Subject ts ON w.subject_name = ts.subject_name
+            WHERE ts.teacher_id = %s
+        """
+        uploaded_files = execute_query(query, (user_id,))
+        return render_template('tasks2.html', uploaded_files=uploaded_files)
     return redirect(url_for('login_page'))
+
+#Роут для скачивания файла
+@app.route('/download/<int:file_id>')
+def download_file(file_id):
+    # Получаем путь к файлу из базы данных
+    query = "SELECT file_path FROM Uploaded_Files WHERE file_id = %s"
+    result = execute_query(query, (file_id,))
+    if result:
+        file_path = result[0]['file_path']
+        directory = os.path.dirname(file_path)
+        filename = os.path.basename(file_path)
+        return send_from_directory(directory, filename, as_attachment=True)
+    flash('Файл не найден', 'error')
+    return redirect(url_for('teacher_tasks'))
 
 # Роут для отображения страницы входа
 @app.route('/login', methods=['GET'])
@@ -153,16 +179,16 @@ def login():
 
     if user_data and user_type == 'student':
         response = make_response(redirect(url_for('student_profile')))
-        response.set_cookie('user_id', str(user_data['student_id']))  # Устанавливаем куку с ID студента
+        response.set_cookie('user_id', str(user_data['student_id']))  # Устанавливаем cookie с ID студента
         response.set_cookie('user_type', 'student')  # Указываем тип пользователя
         return response
 
     elif user_data and user_type == 'teacher':
         response = make_response(redirect(url_for('teacher_profile')))
-        response.set_cookie('user_id', str(user_data['teacher_id']))  # Устанавливаем куку с ID преподавателя
+        response.set_cookie('user_id', str(user_data['teacher_id']))  # Устанавливаем cookie с ID преподавателя
         response.set_cookie('user_type', 'teacher')  # Указываем тип пользователя
         if is_admin:
-            response.set_cookie('is_admin', 'true')  # Устанавливаем куку для админа
+            response.set_cookie('is_admin', 'true')  # Устанавливаем cookie для админа
         return response
 
     return render_template('login.html', error="Неверный логин или пароль")
@@ -268,9 +294,10 @@ def delete_work():
 @app.route('/logout')
 def logout():
     response = make_response(redirect(url_for('login_page')))
-    response.set_cookie('user_id', '', expires=0)  # Удаляем куку с ID пользователя
-    response.set_cookie('user_type', '', expires=0)  # Удаляем куку с типом пользователя
-    response.set_cookie('is_admin', '', expires=0)  # Удаляем куку для админа
+    response.set_cookie('user_id', '', expires=0)  # Удаляем cookie с ID пользователя
+    response.set_cookie('user_type', '', expires=0)  # Удаляем cookie с типом пользователя
+    response.set_cookie('is_admin', '', expires=0)  # Удаляем cookie для админа
+    response.set_cookie('session', '', expires=0)  # Откуда они?
     return response
 
 
