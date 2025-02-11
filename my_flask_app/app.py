@@ -59,8 +59,11 @@ def upload_file():
 
         # Сохраняем информацию о файле в базу данных
         try:
-            insert_uploaded_file(user_id, work_number, file_path)
+            # Вставляем запись и получаем время загрузки
+            upload_date = insert_uploaded_file(user_id, work_number, file_path)
             flash('Файл успешно загружен', 'success')
+            # Передаем work_number и upload_date в параметрах URL
+            return redirect(url_for('tasks', work_number=work_number, upload_date=upload_date))
         except Exception as e:
             flash(f'Ошибка при загрузке файла: {str(e)}', 'error')
 
@@ -68,6 +71,14 @@ def upload_file():
 
     flash('Недопустимый формат файла. Разрешены только PDF.', 'error')
     return redirect(url_for('tasks'))  # Перенаправляем на страницу заданий
+
+
+
+def insert_uploaded_file(student_id, work_number, file_path):
+    query = "INSERT INTO Uploaded_Files (student_id, work_number, file_path) VALUES (%s, %s, %s) RETURNING upload_date"
+    params = (student_id, work_number, file_path)
+    result = execute_query(query, params, fetch=True)
+    return result[0]['upload_date']  # Возвращаем время загрузки
 
 
 
@@ -125,7 +136,9 @@ def tasks():
 
     if user_id and user_type == 'student':
         student_tasks = get_student_tasks(user_id)
-        return render_template('tasks.html', student_tasks=student_tasks)
+        work_number = request.args.get('work_number')  # Получаем work_number из параметров URL
+        upload_date = request.args.get('upload_date')  # Получаем upload_date из параметров URL
+        return render_template('tasks.html', student_tasks=student_tasks, work_number=work_number, upload_date=upload_date)
     return redirect(url_for('login_page'))
 
 

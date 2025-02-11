@@ -177,7 +177,11 @@
                           {{ task.deadline }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                          {{ task.submission_date if task.submission_date else '&nbsp;' | safe }}
+                          {% if task.number == work_number|int and upload_date %}
+                            {{ upload_date }}
+                          {% else %}
+                            {{ task.submission_date if task.submission_date else '&nbsp;' | safe }}
+                          {% endif %}
                         </td>
                         <td class="px-4 py-3 text-sm">
                           {{ task.grade if task.grade else '&nbsp;' | safe }}
