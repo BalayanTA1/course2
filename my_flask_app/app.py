@@ -1,4 +1,6 @@
 import os
+from db.uploaded_files import insert_uploaded_file
+from werkzeug.utils import secure_filename
 from flask import Flask, render_template, request, redirect, url_for, make_response, flash
 from db.student import add_student, get_students, delete_student, get_student_profile, authenticate_user
 from db.teacher import add_teacher, get_teachers, delete_teacher, get_teacher_profile, get_teacher_works
@@ -32,29 +34,38 @@ def upload_file():
 
     if 'file' not in request.files:
         flash('Файл не выбран', 'error')
-        return redirect(request.url)
+        return redirect(url_for('tasks'))  # Перенаправляем на страницу заданий
 
     file = request.files['file']
 
     if file.filename == '':
         flash('Файл не выбран', 'error')
-        return redirect(request.url)
+        return redirect(url_for('tasks'))  # Перенаправляем на страницу заданий
 
     if file and allowed_file(file.filename):
         if file.content_length > app.config['MAX_CONTENT_LENGTH']:
             flash('Файл слишком большой. Максимальный размер — 2 МБ.', 'error')
-            return redirect(request.url)
+            return redirect(url_for('tasks'))  # Перенаправляем на страницу заданий
 
-        # Сохранение файла без безопасного имени
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+        # Сохранение файла с уникальным именем
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
 
-        # Здесь можно добавить логику для сохранения информации о файле в базу данных
-        flash('Файл успешно загружен', 'success')
-        return redirect(url_for('tasks'))
+        # Получаем номер работы из формы
+        work_number = request.form.get('work_number')
+
+        # Сохраняем информацию о файле в базу данных
+        try:
+            insert_uploaded_file(user_id, work_number, file_path)
+            flash('Файл успешно загружен', 'success')
+        except Exception as e:
+            flash(f'Ошибка при загрузке файла: {str(e)}', 'error')
+
+        return redirect(url_for('tasks'))  # Перенаправляем на страницу заданий
 
     flash('Недопустимый формат файла. Разрешены только PDF.', 'error')
-    return redirect(request.url)
+    return redirect(url_for('tasks'))  # Перенаправляем на страницу заданий
 
 
 
