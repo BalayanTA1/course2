@@ -226,7 +226,7 @@ def admin_panel():
     
     return render_template('admin_panel.html', admin_data={'groups': groups, 'users': users, 'subjects': subjects, 'works': works}, user_type=user_type)
 
-# Маршрут для обработки добавления группы
+# Роут для добавления группы
 @app.route('/add_group', methods=['POST'])
 def add_group():
     institute_id = request.form.get('institute_id')
@@ -241,7 +241,7 @@ def delete_group():
     return redirect(url_for('admin_panel'))
 
 
-# Маршрут для обработки добавления предмета
+# Роут для добавления предмета
 @app.route('/add_subject', methods=['POST'])
 def add_subject_route():
     name = request.form.get('name')  
@@ -257,7 +257,7 @@ def delete_subject_route():
 
 
 
-# Маршрут для обработки добавления студента
+# Роут для добавления студента
 @app.route('/add_student', methods=['POST'])
 def add_student_route():
     full_name = request.form.get('full_name')
@@ -270,7 +270,7 @@ def add_student_route():
         add_student(full_name, education_form, group_number, password, login)
     return redirect(url_for('admin_panel'))
 
-# Маршрут для обработки добавления преподавателя
+# Роут для добавления преподавателя
 @app.route('/add_teacher', methods=['POST'])
 def add_teacher_route():
     full_name = request.form.get('full_name')
@@ -297,7 +297,25 @@ def delete_user():
 
     return redirect(url_for('admin_panel'))
 
-# Роут для удаления работ из групп
+# Роут для назначения работы группе
+@app.route('/add_work_to_group', methods=['POST'])
+def add_work_to_group():
+    date = request.form.get('date')
+    deadline = request.form.get('deadline')
+    group_number = request.form.get('group_number')
+    work_number = request.form.get('work_number')
+    subject_name = request.form.get('subject_name')
+
+    query = """
+        INSERT INTO Work_Groups (date, deadline, group_number, work_number, subject_name)
+        VALUES (%s, %s, %s, %s, %s)
+    """
+    params = (date, deadline, group_number, work_number, subject_name)
+    execute_query(query, params)
+
+    return redirect(url_for('admin_panel'))
+
+# Роут для удаления назначеных работ
 @app.route('/delete_work', methods=['POST'])
 def delete_work():
     work_number = request.form.get('work_number')
